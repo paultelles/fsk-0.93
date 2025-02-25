@@ -1,0 +1,201 @@
+Version: @(#)README	1.3 93/10/17 
+
+What PCFS can do
+----------------
+
+PCFS can mount 360K, 720K, 1.2M and 1.44M DOS-formatted floppies.
+
+PCFS can also mount 2.88M DOS floppies if your UNIX floppy disk
+driver allows this. (Not currently available on SVR4).
+
+PCFS can mount all your hard disk DOS partitions if your hard disk
+driver allows. This should work on all Intel-based SVR4  platforms.
+
+I regularly mount my 32M C: and 160M D: DOS partitions under UNIX
+using PCFS - Recently testing didn't show any unexpected error during
+reading as well as wrinting the filesystem (fsk-0.93).
+
+PCFS mounted DOS filesystems on either hard disk or floppy can be
+exported with NFS to other UNIX nodes.
+ 
+
+Typical PCFS usage
+------------------
+
+These are some possible uses for the PCFS filesystem we have
+thought of. Real-world users are apt to find more. 
+Let us know about it!
+
+Easy file transfer between DOS and UNIX universes.
+Just use the regular UNIX file utilities, not those weird DOS
+utilities under UNIX.
+
+A boon when using UNIX-based versions of popular DOS programs.
+You can now directly use files stored on your DOS hard disk
+partitions.
+
+Use UNIX backup facilities to make backups of DOS filesystems,
+even across the network.
+It is possible to use UNIX tar (or GNU tar) to backup and restore
+mounted PCFS filesystems. Comes in handy when you have better 
+facilities under UNIX. 
+Keep also in mind that It is always possible to restore a tar
+backup of a PCFS filesystem on a regular UNIX filesystem,
+even on a different UNIX box.
+
+Export PCFS filesystems across NFS. Although this is unlikely to be
+heavily used the facility can come in handy. Even a regular PC
+could mount PCFS if necessary. Use a minimal root UNIX as a PCFS
+fileserver?
+
+
+
+PCFS quirks list
+----------------
+
+This is an overview of the operational differences between a regular
+UNIX filesystem and PCFS. These differences are mostly inconsequential
+and come from the bad match between the FAT-based DOS filesystem and 
+UNIX.
+
+Created files use only the user permissions bits.  And of these
+only the write bit is meaningful. DOS files always have the
+execute and read bits on.
+
+PCFS does not turn on or off the DOS file archive attribute bit.
+
+The timestamp on DOS files is updated when ever the file is modified.
+
+There is no inode time or create time stamp.
+
+The timestamp placed on a DOS file does not have corrections for
+daylight savings time included. It does have the correction for
+timezone though.
+
+Unix times before 1980 will have their year set to 1980 in dos file
+timestamps.  This is because dos's idea of time starts in 1980.
+
+In order to support NFS correctly PCFS stores a file generation
+number in the reserved area of DOS directory entries.
+This is only enabled when actually exporting the PCFS filesystem
+using NFS. If necessary this feature can be disabled.
+
+PCFS filesystems do not support sparse files.  Any attempt to seek
+past the end of a file results in the blocks being allocated and
+cleared.
+
+When read() is used to examine pcfs directories you will get dos
+directory contents.  Note that the root directory does not contain
+a "." or ".." entry.  Only the readdir() system call simulates these
+entries in the root directory of a dos filesystem.  readdir() returns
+directory entries as described in getdirentries(2).
+
+Using read() and write() to manipulate the contents of DOS directories
+is unwise on an active DOS filesystem since a more up to date copy of
+their contents may reside in data structures in the kernel.  It is
+probably safe to examine the filename field of dos directory entries.
+The filesystem code keeps this up to date at all times.
+
+The cluster allocation algorithm is very simplistic.  It starts at
+cluster 2 and searchs until the last cluster of the filesystem and
+takes the first available cluster.
+
+The fsync() system call does not work on file descriptors open on
+directories.  This isn't a terrible thing since very few programs
+open directories for writing.
+
+The PCFS filesystem truncates filenames quietly.  If a filename has
+more than 8 characters before the 1st period only the 1st eigth are
+used.  It only uses the 1st three characters after the period if
+they exist.  The filenames "abc" and "abc." are the same to pcfs.
+Filenames that begin with a "." are considered to be dos filenames
+with an extension only and so are limited to 3 characters after the
+leading ".".  For example ".imlost" would be seen as ".iml" by PCFS.
+PCFS folds filenames to upper case before writing them to disk or
+looking up filenames, and folds them to lower case when reading them
+from disk for presentation to the user (for example by readdir()).
+
+Directory entries for the DOS filesystem label are quietly ignored.
+
+PCFS supports DOS filesystems with 12 bit or 16 bit FATs.  It supports
+both regular and huge filesystems ( > 32 megabytes).  It supports
+both version 3.3 and 5.0 BPB's.  Don't know about version 4.x and
+less than 3.3.  It has not been tested with 16 bit fats or huge
+filesystems. This is because the hard disk drivers need to support
+dos partitions to do these things. 
+
+PCFS does not support symbolic links or hard links.  It does not
+support quotas.  How could it, PCFS files have no owners.  PCFS
+files have a simulated owner and group of 0.
+
+PCFS does not support file locking.  Though it may in the future.
+
+This is the first release and as such has performance problems.
+Reading large files is very slow because the read ahead code in
+pcfs_read() doesn't read far enough ahead for filesystems with small
+blocksizes.
+
+Performance is the next areas to be worked on. Unless someone else does it.
+
+
+Operational examples for System V Release 4
+------------------- -----------------------
+
+These are just 'fill in the details' examples to get
+you started.
+
+To mount a pcfs filesystem (hard disk):
+	mount -F pcfs /dev/dsk/0s5 /mnt
+
+To mount a pcfs filesystem (floppy):
+	mount -F pcfs /dev/dsk/f0t /mnt
+
+To unmount a pcfs filesystem:
+	umount /mnt
+
+To share a pcfs filesystem using NFS:
+
+	on network node1:
+
+	init 3	(make sure your NFS deamons are running!)
+	mount -F pcfs /dev/dsk/f0t /mnt
+	share -F nfs /mnt
+
+	on network node2:
+
+	mount -F nfs node1:/mnt /mnt
+
+	a local loopback mount on node1:	(see manpage)
+
+	mount -F nfs node1:/mnt	/mnt2		(/mnt2 is the NFS loopback!)
+									
+
+Of course, if you are a regular user of 'pcfs' you can set up
+entries in your '/etc/vfstab' file just like any other filesystem.
+All mount options can also be specified in the '/etc/vfstab'.
+You can set up standard NFS shares in '/etc/dfs/dfstab'.
+
+Use 'man mount_pcfs' to read the manpage.
+
+Files on the PCFS filesystem have userid '0' and groupid '0' by
+default. You can change this by using the 'user=' and 'group='
+mount options.
+
+All files on PCFS are world readable by default and world writable
+if they were writable under DOS.
+
+You can additionally restrict access to the files by using the
+'mask=' mount option. This works like 'umask'.
+
+
+Configuring PCFS into your kernel
+---------------------------------
+
+Running the command 'make build' in this directory will
+automatically build the filesystem drivers, install them
+and build a new kernel.
+
+You can also install the manpage using 'make install.man'.
+
+Just do a 'shutdown -g0 -y -i6' afterwards to reboot.
+Note that you must be 'root' to do this! 

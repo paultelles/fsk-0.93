@@ -1,0 +1,35 @@
+Version: @(#)CHANGES	1.3 93/09/16 
+
+Changes from fsk-0.91 to fsk-0.92
+================================
+
+	- All I/O is now memory mapped.
+
+	- Implementation of mmap system call.
+
+	- Solved flaw related to NFS (no more access denied).
+
+	- Improvement I/O speed of 35 percent.
+
+	- Support of small bocksized disks (thanks Markus).
+
+	- Lots of code cleanups.
+
+
+Changes from fsk-0.9 to fsk-0.91
+================================
+
+	- ANSI prototypes for all functions
+
+	- Massive cleanup of the source code
+
+	- Major cleanup of lint errors/warnings	
+
+	- 'iso9660' can now be exported using NFS.
+
+	- Now also installs correctly when BSD Compatibility Package
+	  has not been installed (whoami not needed).
+
+	- Now installs 'mount_iso9660' manpage using 'make install.man'
+
+	- Fixes and enhancements in the 'mount' command.

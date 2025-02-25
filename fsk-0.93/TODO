@@ -1,0 +1,19 @@
+FSK 0.93 TODO list.
+
+- Old style buffered I/O should be replaced by the modern SVR4 stuff for PCFS.
+
+- Implementation SVR4 memory mapping for PCFS.
+
+- Performance enhancements for PCFS (writing).
+
+- Test tools to check robustness.
+
+- Creating of mkfs/fsck etc. (even for iso9660 - why not).
+
+- More cleanup of code.
+
+- Better documentation...
+
+- Handling DOS-6.0 compressed filesystems.
+
+- Etc.

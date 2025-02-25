@@ -1,0 +1,244 @@
+Version: @(#)README	1.5 93/10/17 
+
+Filesystem Survival Kit	 Version 0.93
+-------------------------------------
+
+0. Acknowledgements
+-------------------
+
+We did not write everything from scratch. The original basis of
+our pcfs came from a version written for 386BSD by Paul Popelka
+(paulp@uts.amdahl.com) and since then extensively modified for SVR4.
+
+The original basis for the iso9660 filesytem came from a version
+of isofs written for 386BSD which seems to be rooted in an even
+earlier version of UFS for BSD.
+
+The lesson: 
+
+Nobody, repeat nobody writes filesystems from scratch.
+
+Honorable mention should go to Roe Peterson (roe@Unibase.SK.CA)
+whose 'ctools' CDROM access package got us thinking of (and buying)
+a CDROM drive in the first place.
+
+A fitting quote:
+
+'He is a giant who stands on the shoulders of others'
+
+
+
+1. What is the 'Filesystem Survival Kit'
+----------------------------------------
+
+The 'Filesystem Survival Kit' provides the following 
+filesystem drivers:
+
+-  An ISO9660 filesystem driver with RockRidge extensions to enable you
+   to mount CD-ROM disks under the UNIX System V Release 4 operating
+   system for the Intel platforms.
+
+   The ISO9660 filesystem supports:
+
+   - plain iso9660 CDROM format
+
+   - iso9660 CDROM format with RockRidge extensions
+
+   - High Sierra CDROM format
+
+   You can use NFS to share mounted CDROMs on the network as well
+   as mmap the whole disk (if you have space for it).
+
+
+-  A PCFS filesystem driver to enable you to mount MS-DOS(tm)
+   filesystems on either floppy or hard disk under the
+   UNIX System V Release 4 operating system for the Intel platforms.
+
+   The PCFS filesystem supports:
+
+   - standard DOS format diskettes (360K / 720K / 1.2M and 1.44M)
+	 (also 2.88M if your floppy driver allows this...)
+
+   - all types of DOS partitions on your hard disk, provided that the
+     hard disk driver is able to access them as block device.
+     This is possible on any Intel-based SVR4 implementation.
+
+   You can use NFS to share mounted PCFS partitions on the network.
+
+
+
+2. *** DISCLAIMER ***
+----------------------
+
+As always:
+ 
+The software in the 'fsk-0.93' Filesystem Survival Kit
+is provided as is.
+
+The author(s) supply this software to be publicly redistributed
+on the understanding that the author(s) are not responsible for the
+correct functioning of this software in any circumstances and are
+not liable for any damages caused by this software.
+
+Starting with 'fsk-0.91' we have put in a lot of testing and we feel
+that the drivers are very stable now. The pcfs part is expected to be
+write safe since fsk-0.93.
+
+Except for some minor missing features and possible performance
+enhancements they should be good enough for general use. 
+
+Since there is always one last (minor) bug it is good practice to
+make a backup of things first. It is recommended to make backups of
+DOS partitions first before using 'pcfs' for the first time.
+
+To put in a lighter note:
+------------------------
+
+We have been able to fully backup and restore DOS partitions on hard
+disk using the standard UNIX 'tar' command.
+
+The iso9660 filesystem has been very stable right from the first version,
+not so surprising since it is read-only.
+
+
+The drivers in this kit have been developed and tested on:
+
+	 ESIX SVR4  4.0.4 on a 486 PC.
+
+A lot of people have reported succes with 'fsk-0.9x' on the
+following systems:
+
+	ESIX SVR4 4.0.4
+    DELL SVR4 2.2
+	Consensys SVR4
+	Sorix (Siemens) SVR4
+    USL SVR 4.0.4
+	Interactive SVR4.0.3.0
+
+Since these drivers are fairly hardware independent we expect them
+to work on most 386/486 ports of System V Release 4.
+
+We have no reports of users using a SVR4.2 version yet.
+Possibly because they already have it or because the technical
+guys still use SVR4.0. Who needs a graphical desktop anyway :-) :-)
+
+We would like to hear about your experiences on DELL, Consensys,
+UHC and others. 
+
+Send bug reports, comments etc. to:
+
+	Gerard van Dorth	gdorth@nl.oracle.com
+
+	Paul Bauwens		paul@pphbau.atr.bso.nl
+
+If you don't like it, you are free to do better!
+
+
+************ USE THESE FILESYSTEM DRIVERS AT YOUR OWN RISK!! ***********
+
+
+3. Can I install this kit? 
+--------------------------
+
+If you do not have the UNIX System V Release 4 operating system
+this kit is probably NOT for you.
+
+The filesystem drivers in this kit are very operating system
+dependent and will NOT run on any other operating system.
+You can use them as a basis for your own developments though!
+
+
+4. Prerequisites
+----------------
+
+In order to compile the filesystem drivers you will need the standard
+AT&T C compiler package. 
+
+For the CD-ROM filesystem you must have a working CD-ROM device driver.
+
+This can be done in most 386 SVR4 implementations by enabling the 
+'sc01' device driver in the kernel, the generic SCSI CDROM driver.
+
+After building a new kernel you should have '/dev/cdrom/cd[0-7]'
+device nodes. Due to a quirk (BUG!!) in this device driver it is
+possible that one or more of these nodes actually access your
+hard disk, so make sure you use the correct one to access the CDROM
+drive. On our system with one SCSI disk this is '/dev/cdrom/cd1'.
+
+The CD-ROM filesystem is a read-only filesystem.
+
+In order to be able to mount a floppy based MS-DOS filesystem
+you can use the standard '/dev/dsk/f[01]t' devices.
+
+In order to be able to mount a MS-DOS hard disk partition you must be
+able to access the MS-DOS partition as a block device.
+
+The actual device to use depends on your operating system version
+and installation, but a very common device under ESIX SVR 4.0.4
+is /dev/dsk/0s5 for the C: partition.
+Look in your operating system documentation for details.
+Also look at /etc/partitions.
+
+
+5. Installation
+---------------
+
+1. Make a backup of your root filesystem and possibly your complete
+   UNIX environment first!
+
+
+2. You can install 'iso9660' filesystem and the 'pcfs' filesystem
+   independently, they do not depend on each other.
+
+
+3. Change into the selected directory with the filesystem code you
+   want to install and type (as root!):
+
+	- To just compile the driver code:
+
+		make all
+
+	- To compile and install the filesystem driver:
+
+		make install
+
+	- To compile and install the filesystem driver AND
+	  immediately build a new kernel:
+
+		make build
+
+	- To install the manpages:
+
+		make install.man
+
+4. After building a new kernel do a reboot using 'shutdown -g0 -y -i6'.
+   This will automatically install the new kernel.
+
+
+5. Look also in the mount/umount manpages and the README files contained
+   in these directories.
+
+
+6. Performance configurations
+-----------------------------
+
+In order to improve performance you should increase the number of
+NBUF's from the default of 100 to at least 200-300. This enables
+PCFS to keep the FAT and/or directory in the buffer cache, greatly
+enhancing performance.
+Add an entry to /etc/conf/cf.d/stune:
+
+NBUF	250
+
+If you must access large amounts of files simultaneously you can
+increase the number of in-core inodes for PCFS and/or ISO9660 by
+adding entries to /etc/conf/cf.d/mtune:
+
+ISO9660NINODE 200     100     400
+PCFSNINODE    200     100     400
+
+Note: you can only use 'idtune' after you have added these entries
+to the 'mtune' file in the first place...
+
+Also note that as ISO9660 is memory mapped now, you don't need to
+increase the NBUF's for this filesystem anymore.

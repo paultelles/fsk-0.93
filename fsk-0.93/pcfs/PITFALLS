@@ -1,0 +1,31 @@
+Version: @(#)PITFALLS	1.1 93/07/17 
+
+Possible problems and pitfalls when using 'pcfs'
+================================================
+
+This document contains a number of problems and solutions found when
+using standard unix utilities on pcfs.
+
+Most of these problems come from the inherent limitations of the DOS
+FAT-based filesystem, which is a bad match for UNIX.
+
+
+1. Don't use the -u flag of cpio on pcfs 
+   --------------------------------------
+
+Problem: I discovered this problem while restoring a large cpio file onto
+a mounted pcfs filesystem. When you use the '-u' flag the original 
+directories can get unlinked and cpio cannot create new links to the
+temporary file it uses internally. Fortunately cpio then fails, so it won't
+destroy a whole filesystem this way.
+
+Result: The original directory is gone and after running CHKDSK you
+find a number of lost cluster chains.
+
+Recovery: A good DOS-based unerase program should be able to unerase
+the lost directory and restore the contents if you immediately unmount the
+pcfs filesystem. Alternatively use CHKDSK /F to repair the DOS filesystem
+as appropriate.
+
+Note that this problem cannot be fixed other than by changing cpio because
+the DOS FAT-based filesystem does NOT support links.

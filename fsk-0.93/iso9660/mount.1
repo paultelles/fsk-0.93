@@ -1,0 +1,94 @@
+.\" @(#)mount.1	1.3 93/09/16 
+.TH MOUNT 1M 
+.SH NAME
+mount (iso9660) \- mount an iso9660 filesystem
+.SH SYNOPSIS
+.B mount
+.RB [ -F
+.BR iso9660 ]
+\fR[\fIgeneric_options\fR]
+\fR[\fB-r\fR]
+.RB [ -o
+.IR specific_options ]
+\fR{\fIspecial\fR|\fImount_point\fR}
+.br
+.B umount
+.RB [ -o
+.BR unlock ]
+.SH DESCRIPTION
+.B mount
+attaches a iso9660 filesystem to the filesystem hierarchy at the pathname
+location
+.IR mount_point ,
+which must be an existing directory not used by other mounts. If 
+.I mount_point
+has any contents prior to the
+.B mount
+operation, these remain hidden until the filesystem is unmounted again.
+.PP
+The iso9660 filesystem currently supports the following CDROM formats:
+.nf
+
+	- simple iso9660 format used by most DOS CDROM's
+
+	- advanced iso9660 format with RockRidge extensions used by
+      the better Unix CDROM's. Allows for very long filenames.
+
+	- High Sierra format used by some Unix and DOS CDROM's. Also
+	  allows for long filenames. This seems to be a dying format.
+.fi
+.PP
+The options are:
+.PP
+\fB-F iso9660\fR
+Specifies the iso9660-FStype.
+.PP
+\fB-r\fR Mount the file system read-only, set by default.
+.PP
+\fB-o\fR Specific iso9660 options.  Bad options return an error.
+.PP
+The following options are defined:
+.RS
+.TP 10
+.B ro
+Read-only switch. This is the default which cannot be changed.
+.TP 10
+.B raw
+No name translations will take place; name are showed as they occur on
+the filesystem. By default this option is switched off.
+.TP 10
+.B norridge
+No rockridge translations will be performed on the filesnames as well as
+file properties. By default this option is switched off.
+.TP 10
+.B lock
+When possible
+.B mount
+tries to lock the tray of the device during the mount. An unlock is performed
+automatically using the
+.B umount
+when this option was successful. Note that the
+.B umount
+has the option [\fB-o unlock\fR] to force this behavior.
+.TP 10
+\fBmask=\fR<\fImask\fR>
+The file permissions are masked with the passed argumnent.
+.TP 10
+\fBuser=\fR<\fIuser\fR>
+All files will be owned by user
+.IR user ,
+default root.
+.I user
+may be an existing username or a proper uid.
+.TP 10
+\fBgroup=\fR<\fIgroup\fR>
+All files will be owned by group
+.IR group ,
+default root.
+.I group
+may be an existing groupname or a proper gid.
+.RE
+.SH FILES
+/etc/mnttab	table of mounted filesystems
+.SH SEE ALSO
+generic mount(1M)

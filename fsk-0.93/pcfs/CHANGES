@@ -1,0 +1,56 @@
+Version: @(#)CHANGES	1.4 93/10/17 
+
+Changes from fsk-0.92 to fsk-0.93
+================================
+
+	- Major bug fixes related to cluster allocation.
+
+	- Major bug fixes in pcfs_rename().
+
+	- Bug fixed related to read-ahead mechanism.
+
+	- Major speed-ups during reading (mainly FAT16 disks).
+
+	- Speed-ups during writing.
+
+Changes from fsk-0.91 to fsk-0.92
+================================
+
+	- Possibility to execute files (by means of VNOMAP flag).
+
+	- Integration SYSVR42 patches.
+
+	- Some cleanups.
+
+Changes from fsk-0.9 to fsk-0.91
+================================
+
+	- Fixed major bug in handling of subdirectories with more
+	  than 16 entries. This bug caused corruption of the 'pcfs'
+	  filesystem.
+
+	- ANSI prototypes for all functions
+
+	- Massive cleanup of the source code
+
+	- Major cleanup of lint errors/warnings	
+
+	- 'pcfs' can now be exported using NFS.
+
+	- Made chown/chgrp into a NO-OP to fix large number
+	  numbers of warnings/errors when using cpio or tar.
+	  'pcfs' does not store uid's and gid's anyway.
+
+	- Now also installs correctly when BSD Compatibility Package
+	  has not been installed (whoami not needed).
+
+	- Now installs 'mount_pcfs' manpage using 'make install.man'
+
+	- Added a dummy 'pcfs_mountroot' function to make DELL kernels
+	  happy that try to mount all available filesystems as root
+	  in sequence during boot. The joys of incompatible bugfixes...
+
+	- Fixes and enhancements in the 'mount' command.
+
+	- Fixed the spurious warning when mounting 360K floppy
+	  filesystems.
